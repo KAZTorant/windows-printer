@@ -12,7 +12,7 @@ const port = 3000;
 const upload = multer({ dest: 'uploads/' });
 
 // Endpoint to receive an uploaded .md file
-app.post('/upload', upload.single('markdownFile'), (req, res) => {
+app.post('/print/windows', upload.single('markdownFile'), (req, res) => {
   // Ensure a file was uploaded
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
