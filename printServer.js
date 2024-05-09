@@ -30,7 +30,7 @@ app.post('/print/windows/file', (req, res) => {
 
   // Construct a PowerShell command to print the file content
   const psCommand = `echo "${escapedContent}" | Out-Printer`;
-
+  console.log({psCommand})
   // Execute the PowerShell command to print the content
   exec(`powershell -Command "${psCommand}"`, (error, stdout, stderr) => {
     if (error) {
