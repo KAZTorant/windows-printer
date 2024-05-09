@@ -29,22 +29,23 @@ app.post('/print/windows/file', (req, res) => {
   const escapedContent = fileContent.replace(/"/g, '""');
 
   // Construct a PowerShell command to print the file content
+  // Execute PowerShell command with better error handling
   const psCommand = `echo "${escapedContent}" | Out-Printer`;
   console.log({psCommand})
-  // Execute the PowerShell command to print the content
-  exec(`powershell -Command "${psCommand}"`, (error, stdout, stderr) => {
+  exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psCommand}"`, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Error: ${error.message}`);
+      console.error(`Execution Error: ${error.message}`);
       return res.status(500).json({ error: 'Printing error', details: error.message });
     }
     if (stderr) {
-      console.error(`Stderr: ${stderr}`);
+      console.error(`Standard Error: ${stderr}`);
       return res.status(500).json({ error: 'Printing issue', details: stderr });
     }
 
     console.log(`Output: ${stdout}`);
     res.json({ success: true, message: 'File printed successfully' });
   });
+
 });
 
 // Start the server on all interfaces
