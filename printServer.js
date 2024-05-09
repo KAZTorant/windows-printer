@@ -30,9 +30,9 @@ app.post('/print/windows/file', (req, res) => {
 
   // Construct a PowerShell command to print the file content
   // Execute PowerShell command with better error handling
-  const psCommand = `echo "${escapedContent}" | Out-Printer`;
+  const psCommand = `powershell.exe "echo \\"${escapedContent}\\" | Out-Printer"`;
   console.log({psCommand})
-  exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psCommand}"`, (error, stdout, stderr) => {
+  exec(psCommand, (error, stdout, stderr) => {
     if (error) {
       console.error(`Execution Error: ${error.message}`);
       return res.status(500).json({ error: 'Printing error', details: error.message });
