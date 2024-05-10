@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "escpos": "^3.0.0-alpha.6",
+    "escpos-usb": "^3.0.0-alpha.4",
     "express": "^4.19.2",
-    "express-fileupload": "^1.5.0"
+    "express-fileupload": "^1.5.0",
+    "markdown-it": "^14.1.0"
   }
 }

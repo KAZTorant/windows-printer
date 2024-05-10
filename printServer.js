@@ -3,6 +3,7 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
 const fs = require('fs');
+const MarkdownPrinter = require('./escpos-print');
 
 // Create an Express app
 const app = express();
@@ -11,6 +12,7 @@ const port = 3000;
 // Middleware for parsing JSON and handling file uploads
 app.use(express.json());
 app.use(fileUpload());
+
 
 // Endpoint to receive an uploaded .md file
 app.post('/print/windows/file', (req, res) => {
@@ -46,6 +48,39 @@ app.post('/print/windows/file', (req, res) => {
     res.json({ success: true, message: 'File printed successfully' });
   });
 
+});
+
+// API endpoint for printing the uploaded Markdown file
+app.post('/print/windows/file/escpos', async (req, res) => {
+  // Check if a file was uploaded
+  if (!req.files || !req.files.markdownFile) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
+  // Access the uploaded Markdown file
+  const markdownFile = req.files.markdownFile;
+
+  // Save the uploaded file temporarily for further processing
+  const tempFilePath = `./temp_${Date.now()}.md`;
+  try {
+    await markdownFile.mv(tempFilePath); // Move file to the temporary location
+    
+    // Initialize the combined printer/parser class
+    const markdownPrinter = new MarkdownPrinter();
+    
+    // Process and print the file content
+    const result = await markdownPrinter.printMarkdownFile(tempFilePath);
+
+    // Respond to the client
+    res.json({ message: result });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to process file', details: err.message });
+  } finally {
+    // Cleanup: delete the temporary file if it exists
+    fs.unlink(tempFilePath, (err) => {
+      if (err) console.error('Error deleting temp file:', err);
+    });
+  }
 });
 
 // Start the server on all interfaces
